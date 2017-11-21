@@ -24,10 +24,9 @@
      triplex it would form. Please note that no other nucleotides are allowed.
    </p>
    <p>
-     You can compute the prediction for a given sequence, or upload a fasta file
-     which might contain more than one sequence. The fasta file should contain
-     one id per record, and all the calculations will be done using the same
-     set of conditions.</p>
+     Right now you can only compute the prediction for a given sequence. In the near future you will be able to upload a fasta file
+     which might contain more than one sequence. 
+     </p>
   </section>
   <section>
     <form id="frm">
@@ -35,15 +34,7 @@
       pH: <br> <input type="text" name="pH"><br>
       TFO concentration (mM): <br> <input type="text" name="tfo_conc"><br>
       Duplex concentration (mM): <br> <input type="text" name="dup_conc"><br>
-    <!--  <button id="reset_form" type="reset_but">Reset</button> -->
   </form>
-  <!-- Change /upload-target to your upload address -->
-  <p id="multifile_opt_txt">
-    You can also upload multiple fasta files.
-    If you have more than 10 records
-    the output will be written to a file and made available to you.
-  </p>
-  <form action="upload.php" class="dropzone" id="my-awesome-dropzone"></form>
   <button id="gen_sample_input" type="sample">Sample input</button>
   <button id="submit_job" type="submit">Submit</button>
 
@@ -56,7 +47,7 @@
   <a href="#sect1" id="take2top">Take me to the top</a>
 <footer>
   <p style="text-align: center;"
-   onclick="alert('EMAILING US IS USELESS');">
+   onclick="alert('Fake email, do not bother.');">
    Do-not-contact: yeah.right@fake-page.com
   </p>
 </footer>
