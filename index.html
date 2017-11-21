@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>RNA-DNA2 stability predictor</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.14.2/numjs.min.js"></script>
+<script src="js/smoothscroll.js"></script>
+<script src="js/dropzone.js"></script>
+<script src="js/rna_tfo_pred.js"></script>
+<header>
+  <div>This is for navigation and so on </div>
+  <div> <a href="index.html" id="mainpage">Main page </a> </div>
+</header>
+<body>
+<link rel="stylesheet" type="text/css" href="css/solarized-light.css" />
+<link rel="stylesheet" type="text/css" href="css/custom.css" />
+<h2 id="sect1">Predictor of RNA-DNA<sub>2</sub> stability
+</h2>
+  <section>
+    <p class="center-justified">Given an sRNA sequence containing only C/U,
+      returns the expected thermodynamic properties of the parallel
+     triplex it would form. Please note that no other nucleotides are allowed.
+   </p>
+   <p>
+     You can compute the prediction for a given sequence, or upload a fasta file
+     which might contain more than one sequence. The fasta file should contain
+     one id per record, and all the calculations will be done using the same
+     set of conditions.</p>
+  </section>
+  <section>
+    <form id="frm">
+      Sequence: <br> <input type="text" name="seq" contenteditable="true"><br>
+      pH: <br> <input type="text" name="pH"><br>
+      TFO concentration (mM): <br> <input type="text" name="tfo_conc"><br>
+      Duplex concentration (mM): <br> <input type="text" name="dup_conc"><br>
+    <!--  <button id="reset_form" type="reset_but">Reset</button> -->
+  </form>
+  <!-- Change /upload-target to your upload address -->
+  <p id="multifile_opt_txt">
+    You can also upload multiple fasta files.
+    If you have more than 10 records
+    the output will be written to a file and made available to you.
+  </p>
+  <form action="upload.php" class="dropzone" id="my-awesome-dropzone"></form>
+  <button id="gen_sample_input" type="sample">Sample input</button>
+  <button id="submit_job" type="submit">Submit</button>
+
+  </p>
+  </section>
+  <div id="content"></div>
+  <br>
+  <section>
+  </section>
+  <a href="#sect1" id="take2top">Take me to the top</a>
+<footer>
+  <p style="text-align: center;"
+   onclick="alert('EMAILING US IS USELESS');">
+   Do-not-contact: yeah.right@fake-page.com
+  </p>
+</footer>
+</body>
+</html>

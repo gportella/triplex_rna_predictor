@@ -1,0 +1,72 @@
+@import url(http://fonts.googleapis.com/css?family=Inconsolata);
+@import url(http://fonts.googleapis.com/css?family=PT+Sans);
+@import url(http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700);
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section,
+summary {
+  display: block;
+}
+body {
+    background-color: OldLace;
+}
+
+p {
+  color: black;
+  font-size: 20;
+  width: 500px;
+  text-align: center;
+}
+html {
+  background-color: #eee8d5;
+  color: #657b83;
+  margin: 1em;
+}
+body {
+  background-color: #fdf6e3;
+  margin: 0 auto;
+  max-width: 23cm;
+  border: 1pt solid #93a1a1;
+  padding: 1em;
+}
+code {
+  background-color: #eee8d5;
+  padding: 2px;
+}
+
+body {
+  margin: 0;
+}
+
+.center-justified {
+  text-align: justify;
+  margin: 0 auto;
+  width: 30em;
+}
+
+a:link, a:visited{
+  text-decoration: none;
+}
+
+a:visited {
+  color: #cb4b16;
+}
+a:hover {
+  color: #cb4b16;
+}
+
+#take2top {
+  font-size: 14px;
+}
+
+h1 {
+    color: navy;
+    margin-left: 5px;
+}

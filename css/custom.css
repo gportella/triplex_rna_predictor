@@ -1,0 +1,56 @@
+input[type=text], select {
+    width: 60%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button[type=reset] {
+    width: 130px;
+    background-color: #859900 ;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button[type=sample] {
+    width: 140px;
+    background-color: #859900 ;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button[type=submit] {
+    width: 140px;
+    background-color: #859900 ;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type=submit]:hover {
+    background-color: #cb4b16;
+}
+
+p#multifile_opt_txt{
+  width: 60%;
+  font-size: 0.8em;
+}
+
+ul {
+    list-style-position:inside;
+    margin: 0;
+    padding-left: 0;
+    text-align: left;
+}​
