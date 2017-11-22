@@ -1,6 +1,5 @@
-
-// ideal gas constant
-var R = 0.0019858;
+ar R = 0.0019858;
+//var nj = require('numjs');
 
 /** Function that count occurrences of a substring in a string;
  * @param {String} string               The string
@@ -92,46 +91,29 @@ function compute_c50(pred_dg, cond){
 
     ref_t = 310
     // we use uM units, hence the 1e6 factor
-    oligo_c50 = 1e6*Math.exp(pred_dg/(ref_t*R)) + 0.5 * cond.get(2);
+    oligo_c50 = 1e6*Math.exp(pred_dg/(ref_t*R)) + 0.5 * cond.get(2)
 
-    return oligo_c50;
+    return oligo_c50
 
 }
 
 function compute_tfo_tm(tfo_cond){
-    /* Apply the nearest-neighbour (NN) model to predict DG and DH for
-     * triplex formation ((C,T)-triplex only). The stability has a very
-     * strong pH dependence. From the DG and DH we can calculate the Tm as
-     * function of the concentration of oligo and also the C_50
-     *
-     * Read in the sequence and the conditions (pH, oligo and duplex
-     * concentration) and apply the NN model to get the DG and DH.  Then apply
-     * a pH correction (only to DG), and from there get the Tm and C_50. 
-     */
-
-    sequence = tfo_cond.sequence var cond = nj.array([tfo_cond.pH,
-            tfo_cond.tfo_conc, tfo_cond.dup_conc]); 
-    // this are part of the model
-    var nn_dh = nj.array([-10.95, -5.73, -6.44]); 
-    var nn_dg = nj.array([-1.891, -0.758, -0.331, 2.646]); 
+    sequence = tfo_cond.sequence
+    var cond = nj.array([tfo_cond.pH, tfo_cond.tfo_conc, tfo_cond.dup_conc]);
+    var nn_dh = nj.array([-10.95, -5.73, -6.44]);
+    var nn_dg = nj.array([-1.891, -0.758, -0.331, 2.646]);
     var x_ph = nj.array([0.893, -0.005]);
 
-    // bMixed switches between counting nuc. or dinuc. for the DH
-    // model or for the DG model.
     var bMixed = false;
     om_dh = count_nuc(sequence, bMixed);
     var bMixed = true;
     om_dg = count_nuc(sequence, bMixed);
-    // mulitply coeficients and sequence composition to get the prediction
     pred_dh = om_dh.dot(nn_dh).get(0);
     pred_dg = om_dg.dot(nn_dg).get(0);
 
-    // correct for the pH
     corrected_dg = apply_ph_correct(om_dg, pred_dg, x_ph, cond);
-    // predict Tm and C50
     pred_tm = compute_tm(pred_dh, corrected_dg, cond);
     c50 = compute_c50(corrected_dg, cond);
-    // output as a JS object, stringified just because.
     var results = {
             "DH": pred_dh.toFixed(1),
             "DG": corrected_dg.toFixed(1),
@@ -139,11 +121,12 @@ function compute_tfo_tm(tfo_cond){
             "C50": c50.toFixed(3)
         }
 
-    var obj = JSON.stringify(results);
+    var obj = JSON.stringify(results)
     return obj;
 }
 
 
+// important!!
 var file_ready = false;
 var file_name = "";
 
@@ -198,6 +181,54 @@ document.addEventListener("DOMContentLoaded",
 			});
 	}
 );
+Dropzone.options.myAwesomeDropzone = {
+	paramName: "file", // The name that will be used to transfer the file
+	maxFilesize: 200, // MB
+	addRemoveLinks: true,
+	maxFiles: 1, //change limit as per your requirements
+	dictMaxFilesExceeded: "Only one file at a time.",
+	params: {
+		"renamed_file": rand_id()
+	},
+	//  renameFilename: function renameFilename(file) {
+	//    return file.renameFilename =rand_id();
+	//  },
+	accept: function(file, done) {
+		if (file.name == "justinbieber.jpg") {
+			done("Naha, you don't.");
+		} else {
+			done();
+		}
+	},
+	init: function() {
+		this.on("addedfile", function(file) {
+			//file_name = file.name;
+			//var myEvent = new CustomEvent("uploadReady");
+			//document.body.dispatchEvent(myEvent);
+		});
+		this.on("removedfile", function (file) {
+			console.log("Here remove dfile");
+		});
+		// Using a closure.
+		var _this = this;
+
+		// Setup the observer for the button.
+		document.querySelector("button#clear-dropzone").addEventListener("click", function() {
+			// Using "_this" here, because "this" doesn't point to the dropzone anymore
+			_this.removeAllFiles(true);
+			// If you want to cancel uploads as well, you
+			// could also call _this.removeAllFiles(true);
+		});
+
+	},
+	success: function(response) {
+		file_name = response.xhr.response;
+		var file_up_names  = []
+		file_up_names.push(file_name);
+		var myEvent = new CustomEvent("uploadReady");
+		document.body.dispatchEvent(myEvent);
+	}
+};
 
 function check_input_simple_pred(tfo_cond) {
 	var message = "ok";
@@ -257,29 +288,177 @@ function print_why_wrong_input(check_input) {
 	};
 }
 
+function post_ajax_by_file_wrt_file(tfo_multi_fasta){
+	$.ajax({
+		type: 'POST',
+		url: 'process_multi.php',
+		data: {
+			json: JSON.stringify(tfo_multi_fasta)
+		},
+		dataType: 'json',
+		success: function(response) {
+			out_multi_pred = JSON.parse(response.result);
+			var fout_name = out_multi_pred["result_fname"]
+			var dwn_file = "uploaded_data" +
+			fout_name.split("uploaded_data")[1];
+			var out_str_multi =
+			"<h5 id='multi_results_file'>Results are ready</h5>" +
+			"<p>" +
+			"<form method='get' action='" +
+			dwn_file +
+			"'> " +
+			"<button type='submit'>Download</button>"
+			"</form>" +
+			"</p>";
+
+			document.querySelector("#content")
+			.innerHTML = out_str_multi;
+			EPPZScrollTo
+			.scrollVerticalToElementById('multi_results_file', 20);
+		}
+	});
+}
+
+function post_ajax_by_file_wrt_html(tfo_multi_fasta){
+	$.ajax({
+		type: 'POST',
+		url: 'process_multi.php',
+		data: {
+			json: JSON.stringify(tfo_multi_fasta)
+		},
+		dataType: 'json',
+		success: function(response) {
+			out_multi_pred = JSON.parse(response.result);
+			var out_str_multi =
+			"<h5 id='multi_results'>Estimated thermodyanamic properties" +
+			"</h5>";
+			for (var key in out_multi_pred) {
+				var orig_id = key.split("_")
+				.slice(0, key.split("_").length - 1)
+				.join("_");
+
+				out_str_multi +=
+				"<p>" +
+				"<p>" + "> " + orig_id + "</p>" +
+				"<ul> " +
+				"<li>DG: " + out_multi_pred[key].DG + " kcal/mol </li>" +
+				"<li>DH: " + out_multi_pred[key].DH + " kcal/mol </li>" +
+				"<li>Tm: " + out_multi_pred[key].Tm + " C </li>" +
+				"<li>C50: " + out_multi_pred[key].C50 + " mM </li>" +
+				"</ul>" +
+				"</p>";
+			}
+			document.querySelector("#content")
+			.innerHTML = out_str_multi;
+			EPPZScrollTo.scrollVerticalToElementById('multi_results', 20);
+		}
+	});
+}
+
+
+function post_ajax_by_file(inp_filename, tfo_cond) {
+
+	// post an ajax request to check if the fasta is ok
+	// if sucessful, checks the number of records in it.
+	// if it's larger than 10 it will post and ajax request
+	// to write the output in a file, if it's equal or lower
+	// than 10 it will post an ajax request that will then
+	// print the results in html
+
+	$.ajax({
+		type: 'POST',
+		url: 'check_fasta.php',
+		data: {
+			json: JSON.stringify(input_filename)
+		},
+		dataType: 'json',
+		success: function(response) {
+			output_check = JSON.parse(response.result);
+			if (output_check.status === -1) {
+				document.querySelector("#content")
+				.innerHTML =
+				"<h5 id='check_fasta_failed'>Error: uploaded file is not a " +
+				"valid fasta file, please make sure each record has a "+
+				"unique id.</h5>";
+			} else {
+				tfo_multi_fasta = {
+					"input_fasta": file_name,
+					"pH": tfo_cond.pH,
+					"tfo_conc": tfo_cond.tfo_conc,
+					"dup_conc": tfo_cond.dup_conc,
+					"save_to_file": 0
+				}
+				if (output_check.records <= 10) {
+					tfo_multi_fasta.save_to_file = 1
+					post_ajax_by_file_wrt_html(tfo_multi_fasta);
+				} else {
+					post_ajax_by_file_wrt_file(tfo_multi_fasta);
+				}
+			}
+		},
+		fail: function() {
+			document.querySelector("#content")
+			.innerHTML = "<h3>Something did not work</h3>";
+		}
+	});
+}
 
 function tfo_thermo_one_seq(tfo_conditions){
-    result = compute_tfo_tm(tfo_conditions);
-    output_pred = JSON.parse(result);
-    document.querySelector("#content")
-        .innerHTML =
-        "<h5 id='results'>Estimated thermodynamic properties </h5>" +
-        "<p>" +
-        "Sequence: " + tfo_conditions.sequence + "<br>" +
-        "pH: " + tfo_conditions.pH + "<br>" +
-        "TFO conc.: " + tfo_conditions.tfo_conc + "mM<br>" +
-        "Duplex conc.: " + tfo_conditions.dup_conc + "mM<br>" +
-        "</p>" +
-        "<ul> " +
-        "<li>DG: " + output_pred.DG + " kcal/mol </li>" +
-        "<li>DH: " + output_pred.DH + " kcal/mol </li>" +
-        "<li>Tm: " + output_pred.Tm + " C </li>" +
-        "<li>C50: " + output_pred.C50 + " mM </li>" +
-        "</ul>";
-    EPPZScrollTo.scrollVerticalToElementById('results', 20);
+	result = compute_tfo_tm(tfo_conditions);
+	output_pred = JSON.parse(result);
+	document.querySelector("#content")
+		.innerHTML =
+		"<h5 id='results'>Estimated thermodynamic properties </h5>" +
+		"<p>" +
+		"Sequence: " + tfo_conditions.sequence + "<br>" +
+		"pH: " + tfo_conditions.pH + "<br>" +
+		"TFO conc.: " + tfo_conditions.tfo_conc + "mM<br>" +
+		"Duplex conc.: " + tfo_conditions.dup_conc + "mM<br>" +
+		"</p>" +
+		"<ul> " +
+		"<li>DG: " + output_pred.DG + " kcal/mol </li>" +
+		"<li>DH: " + output_pred.DH + " kcal/mol </li>" +
+		"<li>Tm: " + output_pred.Tm + " C </li>" +
+		"<li>C50: " + output_pred.C50 + " mM </li>" +
+		"</ul>";
+	EPPZScrollTo.scrollVerticalToElementById('results', 20);
+
 
 }
 
+function post_ajax_one_seq(tfo_conditions) {
+	$.ajax({
+		type: 'POST',
+		url: 'process.php',
+		data: {
+			json: JSON.stringify(tfo_conditions)
+		},
+		dataType: 'json',
+		success: function(response) {
+			output_pred = JSON.parse(response.result);
+			document.querySelector("#content")
+				.innerHTML =
+				"<h5 id='results'>Estimated thermodynamic properties </h5>" +
+				"<p>" +
+				"Sequence: " + tfo_conditions.sequence + "<br>" +
+				"pH: " + tfo_conditions.pH + "<br>" +
+				"TFO conc.: " + tfo_conditions.tfo_conc + "mM<br>" +
+				"Duplex conc.: " + tfo_conditions.dup_conc + "mM<br>" +
+				"</p>" +
+				"<ul> " +
+				"<li>DG: " + output_pred.DG + " kcal/mol </li>" +
+				"<li>DH: " + output_pred.DH + " kcal/mol </li>" +
+				"<li>Tm: " + output_pred.Tm + " C </li>" +
+				"<li>C50: " + output_pred.C50 + " mM </li>" +
+				"</ul>";
+			EPPZScrollTo.scrollVerticalToElementById('results', 20);
+		},
+		fail: function() {
+			document.querySelector("#content")
+				.innerHTML = "<h3>Something did not work</h3>";
+		}
+	});
+}
 
 // Where the action happens
 document.addEventListener("DOMContentLoaded",
@@ -289,15 +468,14 @@ document.addEventListener("DOMContentLoaded",
 		document.getElementById('submit_job')
 			.addEventListener("click", function() {
 				// here you should validate the input and if it is
-				// ok then call the calculations. No more error checking
-                // going on... TODO: error checking
+				// ok then issue the post
 				var tfo_conditions = read_conditions();
 				var check_input = check_input_simple_pred(tfo_conditions);
 				if (check_input !== "ok") {
 					print_why_wrong_input(check_input);
-                } else {
-                    tfo_thermo_one_seq(tfo_conditions);
-                }
+				} else {
+						tfo_thermo_one_seq(tfo_conditions)
+				}
 			});
 	}
 );
