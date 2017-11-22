@@ -98,7 +98,7 @@ function compute_c50(pred_dg, cond){
 }
 
 function compute_tfo_tm(tfo_cond){
-    sequence = tfo_cond.sequence
+    sequence = tfo_cond.sequence;
     var cond = nj.array([tfo_cond.pH, tfo_cond.tfo_conc, tfo_cond.dup_conc]);
     var nn_dh = nj.array([-10.95, -5.73, -6.44]);
     var nn_dg = nj.array([-1.891, -0.758, -0.331, 2.646]);
