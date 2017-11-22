@@ -1,4 +1,4 @@
-ar R = 0.0019858;
+var R = 0.0019858;
 //var nj = require('numjs');
 
 /** Function that count occurrences of a substring in a string;
