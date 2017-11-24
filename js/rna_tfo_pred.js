@@ -479,6 +479,25 @@ document.addEventListener("DOMContentLoaded",
 			});
 	}
 );
+
+function run_tfo_fasta(data) {
+  var re = /[^(U|C)]/
+  if (re.test(data.seq)) {
+    console.log("Wrong sequence")
+    fasta().destroy()
+    //return
+  }
+  console.log("Not seen")
+  la = {
+    "sequence": data.seq,
+    "pH": "7.2",
+    "tfo_conc": "5",
+    "dup_conc": "10"
+  }
+  res = compute_tfo_tm(la);
+  console.log("Results for", data.id, "\n", res)
+}
+
 document.addEventListener("DOMContentLoaded",
 	function(event) {
        document.getElementById('file').addEventListener('change', readFile, false);
@@ -488,6 +507,7 @@ document.addEventListener("DOMContentLoaded",
            var file = files[0];           
            var reader = new FileReader();
            reader.onload = function(event) {
+            var fasta = require('bionode-fasta')
              console.log(event.target.result);            
            }
            reader.readAsText(file)
