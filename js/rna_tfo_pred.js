@@ -487,7 +487,6 @@ function run_tfo_fasta(data) {
     fasta().destroy()
     //return
   }
-  console.log("Not seen")
   la = {
     "sequence": data.seq,
     "pH": "7.2",
@@ -507,13 +506,21 @@ document.addEventListener("DOMContentLoaded",
            var file = files[0];           
            var reader = new FileReader();
            reader.onload = function(event) {
+            var Readable = require('stream').Readable
+            var s = new Readable
             var fasta = require('bionode-fasta')
             var text = reader.result;
+            s.push(text)
+            s.push(null)
             var firstLine = text.split('\n').shift()
-            console.log(firstLine)
-            //console.log(event.target.result);            
+             if (firstLine.charAt(0) == ">") {
+                console.log("Possibly good fasta");
+              s.pipe(fasta({
+                     objectMode: true
+                    }).on('data', run_tfo_fasta))
            }
-           reader.readAsText(file)
         }
+           reader.readAsText(file)
+	}
 	}
 );
