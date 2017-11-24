@@ -508,7 +508,10 @@ document.addEventListener("DOMContentLoaded",
            var reader = new FileReader();
            reader.onload = function(event) {
             var fasta = require('bionode-fasta')
-             console.log(event.target.result);            
+            var text = reader.result;
+            var firstLine = text.split('\n').shift()
+            console.log(firstLine)
+            //console.log(event.target.result);            
            }
            reader.readAsText(file)
         }
