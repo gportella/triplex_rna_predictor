@@ -480,6 +480,8 @@ document.addEventListener("DOMContentLoaded",
 	}
 );
 
+var chunks = [];
+
 function run_tfo_fasta(data) {
   var re = /[^(U|C)]/
   if (re.test(data.seq)) {
@@ -491,10 +493,12 @@ function run_tfo_fasta(data) {
     "sequence": data.seq,
     "pH": "7.2",
     "tfo_conc": "5",
-    "dup_conc": "10"
+    "dup_conc": "10",
   }
-  res = compute_tfo_tm(la);
-  console.log("Results for", data.id, "\n", res)
+  res = JSON.parse(compute_tfo_tm(la));
+
+  chunks.push({"id": data.id, "res": res});
+
 }
 
 document.addEventListener("DOMContentLoaded",
@@ -506,21 +510,45 @@ document.addEventListener("DOMContentLoaded",
            var file = files[0];           
            var reader = new FileReader();
            reader.onload = function(event) {
-            var Readable = require('stream').Readable
-            var s = new Readable
-            var fasta = require('bionode-fasta')
-            var text = reader.result;
-            s.push(text)
-            s.push(null)
-            var firstLine = text.split('\n').shift()
-             if (firstLine.charAt(0) == ">") {
-                console.log("Possibly good fasta");
-              s.pipe(fasta({
-                     objectMode: true
-                    }).on('data', run_tfo_fasta))
+               var Readable = require('stream').Readable
+                   var s = new Readable
+                   var fasta = require('bionode-fasta')
+                   var text = reader.result;
+               s.push(text)
+                   s.push(null)
+                   var firstLine = text.split('\n').shift()
+                   if (firstLine.charAt(0) == ">") {
+                       console.log("Possibly good fasta");
+                       s.pipe(fasta({
+                           objectMode: true
+                       }).on('data', run_tfo_fasta));
+
+                       s.on("end", function () {
+                           var out_str_multi =
+                               "<h5 id='multi_results'>Estimated thermodyanamic properties" +
+                               "</h5>";
+                           for (let res of chunks){
+                               out_str_multi +=
+                                   "<p>" +
+                                   "<p>" + "> " + res.id + "</p>" +
+                                   "<ul> " +
+                                   "<li>DG: " + res.res.DG + " kcal/mol </li>" +
+                                   "<li>DH: " + res.res.DH + " kcal/mol </li>" +
+                                   "<li>Tm: " + res.res.Tm + " C </li>" +
+                                   "<li>C50: " + res.res.C50 + " mM </li>" +
+                                   "</ul>" +
+                                   "</p>";
+                           }
+                           document.querySelector("#content")
+                               .innerHTML = out_str_multi;
+                           EPPZScrollTo.scrollVerticalToElementById('multi_results', 20);
+
+                       });
+                   }else{
+                    console.log("Bad fasta. HTML to do.");
+                   }
            }
-        }
            reader.readAsText(file)
-	}
+       }
 	}
 );
